@@ -3,7 +3,7 @@ from models.users import User
 from passlib.context import CryptContext
 from jwt_utils.security import verify_password, create_access_token
 from fastapi import HTTPException,status
-#from jwt_utils.sanitize import sanitize_text
+from jwt_utils.XSS_sanitize import sanitize_text
 
 pass_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 
@@ -14,7 +14,7 @@ def create_user(db: Session, user_data):
     hashed_password = pass_context.hash(user_data.password)
 
     user = User(
-        fullname=user_data.fullname,
+        fullname=sanitize_text(user_data.fullname),
         email=user_data.email,
         password_hash=hashed_password  
     )
