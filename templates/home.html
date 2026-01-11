@@ -1,0 +1,251 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>L1 Support | Home</title>
+    <link rel="stylesheet" href="login.css">
+<style>
+    * {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: "Segoe UI", system-ui, sans-serif;
+}
+
+body {
+    background: #f4f9ff;
+    color: #1f2937;
+}
+
+/* HEADER */
+.header {
+    background: linear-gradient(135deg, #0f4c81, #1f8ef1);
+    padding: 18px 40px;
+}
+
+.logo-area {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    color: white;
+    font-size: 20px;
+    font-weight: bold;
+}
+
+.logo-area img {
+    width: 40px;
+}
+
+/* HERO */
+.hero {
+    text-align: center;
+    padding: 70px 20px 40px;
+}
+
+.hero h1 {
+    font-size: 36px;
+    color: #0f4c81;
+    margin-bottom: 15px;
+}
+
+.hero p {
+    max-width: 650px;
+    margin: auto;
+    font-size: 16px;
+    line-height: 1.6;
+    color: #475569;
+}
+
+/* ROLE SECTION */
+.role-section {
+    display: flex;
+    justify-content: center;
+    gap: 40px;
+    padding: 50px 20px;
+}
+
+.role-card {
+    background: white;
+    width: 320px;
+    padding: 35px;
+    border-radius: 16px;
+    text-align: center;
+    box-shadow: 0 18px 40px rgba(15, 76, 129, 0.15);
+    transition: 0.3s;
+}
+
+.role-card:hover {
+    transform: translateY(-8px);
+}
+
+.role-card img {
+    width: 70px;
+    margin-bottom: 18px;
+}
+
+.role-card h3 {
+    font-size: 22px;
+    color: #0f4c81;
+    margin-bottom: 10px;
+}
+
+.role-card p {
+    font-size: 14px;
+    color: #6b7280;
+    line-height: 1.6;
+    margin-bottom: 25px;
+}
+
+.role-card a {
+    display: inline-block;
+    padding: 12px 24px;
+    border-radius: 10px;
+    text-decoration: none;
+    color: white;
+    font-weight: bold;
+    background: linear-gradient(135deg, #1f8ef1, #0f4c81);
+}
+
+/* FOOTER */
+.footer {
+    text-align: center;
+    padding: 18px;
+    font-size: 13px;
+    color: #6b7280;
+    background: #ffffff;
+}
+
+/* =========================
+   RESPONSIVE DESIGN
+   ========================= */
+
+/* Tablet */
+@media (max-width: 992px) {
+    .header {
+        padding: 16px 24px;
+    }
+
+    .hero h1 {
+        font-size: 32px;
+    }
+
+    .role-section {
+        gap: 25px;
+    }
+
+    .role-card {
+        width: 300px;
+    }
+}
+
+/* Mobile */
+@media (max-width: 768px) {
+    .header {
+        text-align: center;
+        padding: 14px 16px;
+    }
+
+    .logo-area {
+        justify-content: center;
+    }
+
+    .hero {
+        padding: 50px 16px 25px;
+    }
+
+    .hero h1 {
+        font-size: 26px;
+    }
+
+    .hero p {
+        font-size: 14px;
+    }
+
+    .role-section {
+        flex-direction: column;
+        align-items: center;
+        padding: 40px 16px;
+    }
+
+    .role-card {
+        width: 100%;
+        max-width: 360px;
+    }
+
+    .role-card a {
+        width: 100%;
+        display: block;
+    }
+}
+
+/* Small Mobile */
+@media (max-width: 480px) {
+    .hero h1 {
+        font-size: 22px;
+    }
+
+    .hero p {
+        font-size: 13px;
+    }
+
+    .footer {
+        font-size: 12px;
+    }
+}
+
+
+</style>
+
+
+
+</head>
+<body>
+
+<!-- HEADER -->
+<header class="header">
+    <div class="logo-area">
+        <img src="https://cdn-icons-png.flaticon.com/512/2621/2621040.png" alt="Logo">
+        <span>L1 Support Desk</span>
+    </div>
+</header>
+
+<!-- HERO SECTION -->
+<section class="hero">
+    <h1>Hi, Welcome to L1 Customer Support</h1>
+    <p>
+        A secure and efficient platform to raise tickets,
+        track issues, and get quick resolutions from our support team.
+    </p>
+</section>
+
+<!-- ROLE SELECTION -->
+<section class="role-section">
+    <div class="role-card">
+        <img src="https://cdn-icons-png.flaticon.com/512/847/847969.png" alt="Customer">
+        <h3>Customer Login</h3>
+        <p>
+            Raise support tickets, upload screenshots,
+            and track issue status in real time.
+        </p>
+        <a href="customer-login.html">Login as Customer</a>
+    </div>
+
+    <div class="role-card">
+        <img src="https://cdn-icons-png.flaticon.com/512/3050/3050525.png" alt="Agent">
+        <h3>Agent Login</h3>
+        <p>
+            Manage assigned tickets, communicate with customers,
+            and resolve issues efficiently.
+        </p>
+        <a href="agent_login.html">Login as Agent</a>
+    </div>
+</section>
+
+<!-- FOOTER -->
+<footer class="footer">
+    © 2026 L1 Support Desk | Secure Helpdesk Platform
+</footer>
+
+</body>
+</html>

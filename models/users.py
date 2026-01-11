@@ -1,8 +1,6 @@
 from sqlalchemy import Column, Integer, String
-from sqlalchemy.ext.declarative import declarative_base
-from db import engine
-
-Base = declarative_base()
+from sqlalchemy.orm import relationship
+from db import Base
 
 class User(Base):
     __tablename__ = "users"
@@ -11,5 +9,8 @@ class User(Base):
     fullname = Column(String(100))
     email = Column(String(100), unique=True, index=True)
     password_hash = Column(String(255))   
+    
+    tickets = relationship("Ticket", back_populates="user")
 
-Base.metadata.create_all(bind=engine)
+
+

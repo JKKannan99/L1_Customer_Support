@@ -1,9 +1,7 @@
 from sqlalchemy import Column, Integer, String, Boolean
 from sqlalchemy.ext.declarative import declarative_base
-from db import engine
-
-
-Base = declarative_base()
+from db import Base
+from sqlalchemy.orm import relationship
 
 class Agent(Base):
     __tablename__ = "agents"
@@ -12,5 +10,5 @@ class Agent(Base):
     username = Column(String(100), unique=True, index=True, nullable=False)
     password = Column(String(255), nullable=False)
     is_active = Column(Boolean, default=True)
+    tickets = relationship("Ticket", back_populates="agent")
 
-Base.metadata.create_all(bind=engine)

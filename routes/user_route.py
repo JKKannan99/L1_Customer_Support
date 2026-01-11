@@ -3,15 +3,12 @@ from sqlalchemy.orm import Session
 from db import get_db
 from schemas.users_schema import UserCreate,LoginRequest
 from services.user_service import authenticate_user
-from services.user_service import get_all_users, create_user
+from services.user_service import create_user
 from models.users import User
 
 
 router = APIRouter(prefix="/user", tags=["User"])
 
-@router.get("/")
-def get_users(db: Session = Depends(get_db)):
-    return get_all_users(db)
 
 @router.post("/register")
 def register_user(user: UserCreate, db: Session = Depends(get_db)):

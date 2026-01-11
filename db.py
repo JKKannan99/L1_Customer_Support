@@ -1,5 +1,5 @@
 from sqlalchemy import create_engine
-from sqlalchemy.orm import sessionmaker
+from sqlalchemy.orm import sessionmaker,declarative_base
 
 DATABASE_URL = "mysql+pymysql://root:my_mysql@localhost:3306/cust_support"
 
@@ -10,6 +10,8 @@ SessionLocal = sessionmaker(
     autoflush=False,
     bind=engine
 )
+
+Base = declarative_base()
 
 def get_db():
     db = SessionLocal()

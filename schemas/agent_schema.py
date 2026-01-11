@@ -8,3 +8,4 @@ class AgentResponse(BaseModel):
     id: int
     username: str
     message: str
+
