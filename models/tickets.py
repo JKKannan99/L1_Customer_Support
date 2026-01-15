@@ -40,4 +40,10 @@ class Ticket(Base):
         back_populates="ticket",
         cascade="all, delete-orphan"
     )
+    messages = relationship(
+    "Message",
+    backref="ticket",
+    cascade="all, delete-orphan"
+)
+
 

@@ -1,8 +1,10 @@
 from fastapi import FastAPI
+#from fastapi.responses import HTMLResponse
 from fastapi.middleware.cors import CORSMiddleware
 from routes.user_route import router as user_router
 from routes.agent_route import router as agent_router
 from routes.ticket_route import router as ticket_router
+from routes import agent_ticket,message_ws
 app = FastAPI()
 
 
@@ -18,9 +20,11 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
+
+
+
 app.include_router(user_router)
-
 app.include_router(agent_router)
-
 app.include_router(ticket_router)
-
+app.include_router(message_ws.router)
+app.include_router(agent_ticket.router)

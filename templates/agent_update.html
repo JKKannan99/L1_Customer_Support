@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Agent Ticket Status</title>
+
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+   <style>
+    body {
+    font-family: Arial, sans-serif;
+    background: #f4f4f4;
+}
+
+.container {
+    width: 350px;
+    margin: 80px auto;
+    background: white;
+    padding: 20px;
+    border-radius: 6px;
+}
+
+label {
+    display: block;
+    margin-top: 10px;
+}
+
+input, select {
+    width: 100%;
+    padding: 8px;
+    margin-top: 5px;
+}
+
+button {
+    margin-top: 15px;
+    width: 100%;
+    padding: 10px;
+    background: #007bff;
+    color: white;
+    border: none;
+    cursor: pointer;
+}
+
+button:hover {
+    background: #0056b3;
+}
+
+#result {
+    margin-top: 15px;
+    font-weight: bold;
+}
+
+   </style>
+</head>
+<body>
+
+<div class="container">
+    <h2>Agent – Update Ticket Status</h2>
+
+    <label for="ticketId">Ticket ID</label>
+    <input id="ticketId" placeholder="Enter Ticket ID (e.g. 1)">
+
+    <label for="status">Status</label>
+    <select id="status">
+        <option value="Open">Open</option>
+        <option value="In Progress">In Progress</option>
+        <option value="Closed">Closed</option>
+    </select>
+
+    <button onclick="updateStatus()">Update Status</button>
+
+    <p id="result"></p>
+</div>
+
+<script>
+    function updateStatus() {
+    const ticketId = document.getElementById("ticketId").value;
+    const status = document.getElementById("status").value;
+    const result = document.getElementById("result");
+
+    if (!ticketId) {
+        alert("Enter Ticket ID");
+        return;
+    }
+
+    fetch(`http://127.0.0.1:8000/agent/tickets/${ticketId}/status?status=${encodeURIComponent(status)}`, {
+        method: "PUT"
+    })
+    .then(res => res.json())
+    .then(data => {
+        result.style.color = "green";
+        result.innerText = "Status updated to: " + data.status;
+    })
+    .catch(err => {
+        result.style.color = "red";
+        result.innerText = "Error updating status";
+        console.error(err);
+    });
+}
+
+</script>
+</body>
+</html>

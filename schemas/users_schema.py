@@ -11,8 +11,7 @@ class UserCreate(BaseModel):
         if self.password != self.confirm_password:
             raise ValueError("Password and Confirm Password must be same")
         return self
-
-
+    
 
 class LoginRequest(BaseModel):
     email: EmailStr

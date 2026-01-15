@@ -8,7 +8,8 @@ class User(Base):
     id = Column(Integer, primary_key=True, index=True)
     fullname = Column(String(100))
     email = Column(String(100), unique=True, index=True)
-    password_hash = Column(String(255))   
+    password_hash = Column(String(255)) 
+    role   = Column(String(255),default="user")
     
     tickets = relationship("Ticket", back_populates="user")
 

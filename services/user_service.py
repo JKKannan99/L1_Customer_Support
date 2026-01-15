@@ -7,10 +7,19 @@ from jwt_utils.XSS_sanitize import sanitize_text
 
 pass_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 
-def get_all_users(db: Session):
-    return db.query(User).all()
+
 
 def create_user(db: Session, user_data):
+    existing_user=db.query(User).filter(
+        User.email==user_data.email
+    ).first()
+
+    if existing_user:
+        raise HTTPException(
+            status_code=400,
+            detail="email already exist"
+        )
+
     hashed_password = pass_context.hash(user_data.password)
 
     user = User(
@@ -40,7 +49,7 @@ def authenticate_user(db: Session, email: str, password: str):
             detail="Invalid email or password"
         )
 
-    token = create_access_token({"sub": str(user.id)})
+    token = create_access_token({"sub": str(user.id),"role":"user"})
 
     return {
         "access_token": token,

@@ -10,5 +10,8 @@ class Agent(Base):
     username = Column(String(100), unique=True, index=True, nullable=False)
     password = Column(String(255), nullable=False)
     is_active = Column(Boolean, default=True)
+    role   = Column(String(255),default="agent")
+
+
     tickets = relationship("Ticket", back_populates="agent")
 

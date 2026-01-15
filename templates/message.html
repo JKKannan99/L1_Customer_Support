@@ -1,0 +1,116 @@
+
+
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Ticket Chat</title>
+
+    <!-- FIXED -->
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+     <style>
+        body {
+    font-family: Arial, sans-serif;
+    background: #f4f4f4;
+}
+
+.chat-container {
+    width: 400px;
+    margin: 50px auto;
+    background: white;
+    padding: 15px;
+    border-radius: 5px;
+}
+
+#chatBox {
+    border: 1px solid #ccc;
+    height: 250px;
+    overflow-y: auto;
+    margin: 10px 0;
+    padding: 5px;
+}
+
+.message {
+    margin-bottom: 5px;
+}
+
+.sender {
+    font-weight: bold;
+}
+
+    </style>
+</head>
+<body>
+
+<div class="chat-container">
+    <h2>Ticket Chat</h2>
+
+    <label for="ticketId">Ticket ID</label>
+    <input id="ticketId" placeholder="Ticket ID">
+
+    <label for="sender">Sender</label>
+    <select id="sender">
+        <option value="Customer">Customer</option>
+        <option value="Agent">Agent</option>
+    </select>
+
+    <button onclick="connect()">Connect</button>
+
+    <div id="chatBox"></div>
+
+    <input id="messageInput" placeholder="Type message...">
+    <button onclick="sendMessage()">Send</button>
+</div>
+
+<script>
+    let socket = null;
+
+function connect() {
+    const ticketNo = document.getElementById("ticketId").value;
+
+    socket = new WebSocket(
+        `ws://127.0.0.1:8000/ws/tickets/${ticketNo}`
+    );
+
+    socket.onopen = () => {
+        appendMessage("System", "Connected to ticket " + ticketNo);
+    };
+
+    socket.onmessage = (event) => {
+        const data = JSON.parse(event.data);
+        appendMessage(data.sender, data.content);
+    };
+
+    socket.onclose = () => {
+        appendMessage("System", "Disconnected");
+    };
+}
+
+function sendMessage() {
+    const sender = document.getElementById("sender").value;
+    const content = document.getElementById("messageInput").value;
+
+    if (!content || !socket) return;
+
+    socket.send(JSON.stringify({
+        sender: sender,
+        content: content
+    }));
+
+    document.getElementById("messageInput").value = "";
+}
+
+function appendMessage(sender, text) {
+    const chatBox = document.getElementById("chatBox");
+    const div = document.createElement("div");
+    div.className = "message";
+    div.innerHTML = `<span class="sender">${sender}:</span> ${text}`;
+    chatBox.appendChild(div);
+    chatBox.scrollTop = chatBox.scrollHeight;
+}
+
+</script>
+</body>
+</html>

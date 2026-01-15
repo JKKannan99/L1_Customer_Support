@@ -1,5 +1,5 @@
 import os
-from datetime import datetime
+from datetime import datetime,timezone
 from fastapi import UploadFile
 from sqlalchemy.orm import Session
 from models.tickets import Ticket, TicketStatus
@@ -33,7 +33,7 @@ def create_ticket(db: Session, user_id: int, data: TicketCreate, screenshots: li
 
     # Save screenshots
     for file in screenshots:
-        filename = f"{ticket.ticket_no}_{datetime.utcnow().timestamp()}_{file.filename}"
+        filename = f"{ticket.ticket_no}_{datetime.now(timezone.utc).timestamp()}_{file.filename}"
         filepath = os.path.join(UPLOAD_FOLDER, filename)
 
         with open(filepath, "wb") as f:
@@ -61,3 +61,15 @@ def get_user_tickets(db: Session, user_id: int):
         .order_by(Ticket.created_at.desc())
         .all()
     )
+
+
+
+def update_ticket_status(db: Session, ticket_id: int, status: TicketStatus):
+    ticket = db.query(Ticket).filter(Ticket.id == ticket_id).first()
+    if not ticket:
+        return None
+
+    ticket.status = status
+    db.commit()
+    db.refresh(ticket)
+    return ticket
