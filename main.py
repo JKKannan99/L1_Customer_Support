@@ -6,6 +6,8 @@ from routes.user_route import router as user_router
 from routes.agent_route import router as agent_router
 from routes.ticket_route import router as ticket_router
 from routes import agent_ticket,message_ws
+
+
 app = FastAPI()
 
 
@@ -24,7 +26,6 @@ app.add_middleware(
 
 
 app.mount("/uploads",StaticFiles(directory="uploads"),name="uploads")
-
 
 
 app.include_router(user_router)
