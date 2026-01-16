@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Create Ticket</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: #f5f5f5;
+        }
+        .box {
+            width: 420px;
+            margin: 40px auto;
+            padding: 20px;
+            background: white;
+            border: 1px solid #ccc;
+        }
+        input, select, textarea, button {
+            width: 100%;
+            padding: 8px;
+            margin-top: 10px;
+        }
+        textarea {
+            resize: vertical;
+        }
+        ul {
+            margin-top: 10px;
+            padding-left: 20px;
+        }
+        button {
+            cursor: pointer;
+            background: #007bff;
+            color: white;
+            border: none;
+        }
+        button:disabled {
+            background: gray;
+            cursor: not-allowed;
+        }
+    </style>
+</head>
+<body>
+
+<div class="box">
+    <h3>Create Support Ticket</h3>
+
+    <!-- Auto-filled -->
+    <input type="email" id="email" disabled>
+
+    <select id="category">
+        <option value="">-- Select Category --</option>
+        <option value="Payment Issue">Payment Issue</option>
+        <option value="Network Issue">Network Issue</option>
+        <option value="Other">Other</option>
+    </select>
+
+    <input type="text" id="subject" placeholder="Subject" required>
+
+    <textarea id="description" placeholder="Description" rows="4"></textarea>
+
+    <input type="text" id="callback" placeholder="Callback Number (optional)">
+
+    <input type="file" id="screenshots" multiple accept="image/*">
+
+    <small>Minimum 1 & Maximum 3 screenshots</small>
+
+    <ul id="fileList"></ul>
+
+    <button onclick="submitTicket()">Create Ticket</button>
+</div>
+
+<script>
+/* =========================
+   TOKEN CHECK
+   ========================= */
+const token = sessionStorage.getItem("access_token");
+if (!token) {
+    alert("Session expired. Please login again.");
+    window.location.href = "user_login.html";
+}
+
+/* =========================
+   FETCH USER EMAIL
+   ========================= */
+fetch("http://127.0.0.1:8000/user/me", {
+    headers: {
+        "Authorization": "Bearer " + token
+    }
+})
+.then(res => res.json())
+.then(data => {
+    document.getElementById("email").value = data.email;
+})
+.catch(() => {
+    alert("Failed to load user info");
+});
+
+/* =========================
+   FILE HANDLING
+   ========================= */
+const fileInput = document.getElementById("screenshots");
+const fileList = document.getElementById("fileList");
+
+fileInput.addEventListener("change", () => {
+    fileList.innerHTML = "";
+
+    const files = fileInput.files;
+
+    if (files.length < 1) {
+        alert("At least 1 screenshot required");
+        fileInput.value = "";
+        return;
+    }
+
+    if (files.length > 3) {
+        alert("Maximum 3 screenshots allowed");
+        fileInput.value = "";
+        return;
+    }
+
+    for (let i = 0; i < files.length; i++) {
+        const li = document.createElement("li");
+        li.textContent = files[i].name;
+        fileList.appendChild(li);
+    }
+});
+
+/* =========================
+   SUBMIT TICKET
+   ========================= */
+function submitTicket() {
+
+    const category = document.getElementById("category").value;
+    const subject = document.getElementById("subject").value;
+    const description = document.getElementById("description").value;
+    const callback = document.getElementById("callback").value;
+    const files = fileInput.files;
+
+    if (!category || !subject || !description) {
+        alert("All required fields must be filled");
+        return;
+    }
+
+    if (files.length < 1 || files.length > 3) {
+        alert("Upload 1 to 3 screenshots");
+        return;
+    }
+
+    const formData = new FormData();
+    formData.append("category", category);
+    formData.append("subject", subject);
+    formData.append("description", description);
+    formData.append("callback_number", callback);
+
+    for (let i = 0; i < files.length; i++) {
+        formData.append("screenshots", files[i]);
+    }
+
+    fetch("http://127.0.0.1:8000/user/create-ticket", {
+        method: "POST",
+        headers: {
+            "Authorization": "Bearer " + token
+        },
+        body: formData
+    })
+    .then(res => {
+        if (!res.ok) {
+            throw new Error("Ticket creation failed");
+        }
+        return res.json();
+    })
+    .then(() => {
+        alert("Ticket created successfully");
+        window.location.href = "user_ticket_show.html";
+    })
+    .catch(err => {
+        console.error(err);
+        alert("Failed to create ticket");
+    });
+}
+</script>
+
+</body>
+</html>

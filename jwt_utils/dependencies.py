@@ -18,7 +18,7 @@ def get_current_user(token: str = Depends(oauth2_scheme)):
                 detail="Invalid token"
             )
 
-        if role != "user":
+        if role not in ["user","agent"]:  #make allow agent can acces user
             raise HTTPException(
                 status_code=status.HTTP_403_FORBIDDEN,
                 detail="User access required"

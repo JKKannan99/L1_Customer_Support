@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>User Login</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: #f5f5f5;
+        }
+        .login-box {
+            width: 300px;
+            margin: 100px auto;
+            padding: 20px;
+            background: white;
+            border: 1px solid #ccc;
+        }
+        input, button {
+            width: 100%;
+            padding: 8px;
+            margin-top: 10px;
+        }
+        button {
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+
+<div class="login-box">
+    <h3>User Login</h3>
+
+    <input type="email" id="username" placeholder="username" required>
+    <input type="password" id="password" placeholder="Password" required>
+
+    <button onclick="login()">Login</button>
+    <p id="error" style="color:red;"></p>
+</div>
+
+<script>
+function login() {
+    const username = document.getElementById("username").value;
+    const password = document.getElementById("password").value;
+    const error = document.getElementById("error");
+
+    error.textContent = "";
+
+    fetch("http://127.0.0.1:8000/agent/login", {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json"
+        },
+        body: JSON.stringify({
+            username: username,
+            password: password
+        })
+    })
+    .then(res => {
+        if (!res.ok) {
+            throw new Error("Invalid credentials");
+        }
+        return res.json();
+    })
+    .then(data => {
+        // ✅ Store JWT in sessionStorage
+        sessionStorage.setItem("access_token", data.access_token);
+
+        // ✅ Redirect to tickets page
+        window.location.href = "agent_update.html";
+    })
+    .catch(err => {
+        error.textContent = "Login failed. Check email or password.";
+    });
+}
+</script>
+
+</body>
+</html>

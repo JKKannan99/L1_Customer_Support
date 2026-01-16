@@ -63,7 +63,6 @@ def get_user_tickets(db: Session, user_id: int):
     )
 
 
-
 def update_ticket_status(db: Session, ticket_id: int, status: TicketStatus):
     ticket = db.query(Ticket).filter(Ticket.id == ticket_id).first()
     if not ticket:

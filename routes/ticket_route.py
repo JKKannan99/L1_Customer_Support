@@ -6,8 +6,33 @@ from schemas.ticket_schema import TicketCreate,TicketResponse
 from services.ticket_service import create_ticket,get_all_tickets,get_user_tickets
 from jwt_utils.dependencies import get_current_user,get_current_agent
 from models.tickets import Ticket,TicketStatus
+from models.users import User
 
 router = APIRouter(prefix="/user", tags=["Ticket"])
+
+
+@router.get("/me")
+def get_me(
+    db: Session = Depends(get_db),
+    current_user: dict = Depends(get_current_user)
+):
+    user = db.query(User).filter(User.id == current_user["user_id"]).first()
+
+
+    if not user:
+        raise HTTPException(status_code=404, detail="User not found")
+
+    return {
+        "id": user.id,
+        "email": user.email,
+        "name": user.fullname
+    }
+
+
+
+
+
+
 
 @router.post("/create-ticket")
 async def create_ticket_api(
@@ -46,9 +71,7 @@ async def create_ticket_api(
         "ticket_id": ticket.ticket_no
     }
 
-@router.get("/tickets")
-def get_all_ticket(db: Session = Depends(get_db)):
-    return get_all_tickets(db)
+
 
 
 @router.get("/my-tickets", response_model=List[TicketResponse])

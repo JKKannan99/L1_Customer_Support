@@ -1,103 +1,147 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
-    <meta charset="UTF-8">
-    <title>Agent Ticket Status</title>
-
+    <title>Agent Dashboard</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-   <style>
-    body {
-    font-family: Arial, sans-serif;
-    background: #f4f4f4;
-}
-
-.container {
-    width: 350px;
-    margin: 80px auto;
-    background: white;
-    padding: 20px;
-    border-radius: 6px;
-}
-
-label {
-    display: block;
-    margin-top: 10px;
-}
-
-input, select {
-    width: 100%;
-    padding: 8px;
-    margin-top: 5px;
-}
-
-button {
-    margin-top: 15px;
-    width: 100%;
-    padding: 10px;
-    background: #007bff;
-    color: white;
-    border: none;
-    cursor: pointer;
-}
-
-button:hover {
-    background: #0056b3;
-}
-
-#result {
-    margin-top: 15px;
-    font-weight: bold;
-}
-
-   </style>
+    <style>
+        table { width: 100%; border-collapse: collapse; }
+        th, td { padding: 10px; border: 1px solid #ccc; }
+        select { padding: 5px; }
+    </style>
 </head>
 <body>
 
-<div class="container">
-    <h2>Agent – Update Ticket Status</h2>
+<h2>Agent Dashboard</h2>
 
-    <label for="ticketId">Ticket ID</label>
-    <input id="ticketId" placeholder="Enter Ticket ID (e.g. 1)">
+<table id="agentTable">
+    <thead>
+        <tr>
+            <th>Ticket No</th>
+            <th>User ID</th>
+            <th>Status</th>
+            <th>Change Status</th>
+        </tr>
+    </thead>
+    <tbody></tbody>
+</table>
 
-    <label for="status">Status</label>
-    <select id="status">
-        <option value="Open">Open</option>
-        <option value="In Progress">In Progress</option>
-        <option value="Closed">Closed</option>
-    </select>
-
-    <button onclick="updateStatus()">Update Status</button>
-
-    <p id="result"></p>
-</div>
 
 <script>
-    function updateStatus() {
-    const ticketId = document.getElementById("ticketId").value;
-    const status = document.getElementById("status").value;
-    const result = document.getElementById("result");
+/* =========================
+   JWT ROLE DECODER
+   ========================= */
+function getRoleFromToken(token) {
+    try {
+        const payload = JSON.parse(atob(token.split(".")[1]));
+        return payload.role;
+    } catch (e) {
+        return null;
+    }
+}
 
-    if (!ticketId) {
-        alert("Enter Ticket ID");
+/* =========================
+   TOKEN + ROLE CHECK
+   ========================= */
+const token = sessionStorage.getItem("access_token");
+
+if (!token) {
+    alert("Session expired. Please login again.");
+    window.location.href = "agent_login.html";
+    throw new Error("No token");
+}
+
+const role = getRoleFromToken(token);
+
+if (role !== "agent") {
+    alert("Unauthorized access");
+    window.location.href = "agent_login.html";
+    throw new Error("Wrong role");
+}
+
+/* =========================
+   FETCH ALL TICKETS
+   ========================= */
+fetch("http://127.0.0.1:8000/agent/tickets", {
+    headers: {
+        "Authorization": "Bearer " + token
+    }
+})
+.then(res => {
+    if (!res.ok) {
+        throw new Error("HTTP Error: " + res.status);
+    }
+    return res.json();
+})
+.then(data => {
+    if (!Array.isArray(data)) {
+        console.error("Unexpected response:", data);
         return;
     }
 
-    fetch(`http://127.0.0.1:8000/agent/tickets/${ticketId}/status?status=${encodeURIComponent(status)}`, {
-        method: "PUT"
+    const tbody = document.querySelector("#agentTable tbody");
+    tbody.innerHTML = "";
+
+    data.forEach(ticket => {
+        const row = document.createElement("tr");
+
+        row.innerHTML = `
+            <td>${ticket.ticket_no}</td>
+            <td>${ticket.user_id}</td>
+            <td>${ticket.status}</td>
+            <td>
+                <select onchange="updateStatus(${ticket.id}, this.value)">
+                    <option value="Open" ${ticket.status === "Open" ? "selected" : ""}>Open</option>
+                    <option value="In Progress" ${ticket.status === "In Progress" ? "selected" : ""}>In Progress</option>
+                    <option value="Closed" ${ticket.status === "Closed" ? "selected" : ""}>Closed</option>
+                </select>
+            </td>
+        `;
+
+        tbody.appendChild(row);
+    });
+})
+.catch(err => {
+    console.error(err);
+    alert("Failed to load tickets. Please login again.");
+});
+
+/* =========================
+   UPDATE TICKET STATUS
+   ========================= */
+function updateStatus(ticketId, status) {
+    fetch(
+        `http://127.0.0.1:8000/agent/tickets/${ticketId}/status?status=${encodeURIComponent(status)}`,
+        {
+            method: "PUT",
+            headers: {
+                "Authorization": "Bearer " + token
+            }
+        }
+    )
+    .then(res => {
+        if (!res.ok) {
+            throw new Error("Status update failed");
+        }
+        return res.json();
     })
-    .then(res => res.json())
-    .then(data => {
-        result.style.color = "green";
-        result.innerText = "Status updated to: " + data.status;
+    .then(() => {
+        alert("Status updated successfully");
     })
     .catch(err => {
-        result.style.color = "red";
-        result.innerText = "Error updating status";
         console.error(err);
+        alert("Failed to update status");
     });
 }
-
 </script>
+
+    
+
+
+
+
+
+
+
 </body>
 </html>

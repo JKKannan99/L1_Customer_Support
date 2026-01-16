@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>My Tickets</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <style>
+        table { width: 100%; border-collapse: collapse; }
+        th, td { padding: 10px; border: 1px solid #ccc; }
+        button { padding: 5px 10px; cursor: pointer; }
+        .modal {
+            display: none;
+            position: fixed;
+            top: 10%;
+            left: 10%;
+            width: 80%;
+            background: white;
+            border: 1px solid #000;
+            padding: 20px;
+        }
+        img { max-width: 200px; margin: 5px; }
+    </style>
+</head>
+<body>
+
+<h2>My Tickets</h2>
+
+<table id="ticketTable">
+    <thead>
+        <tr>
+            <th>Ticket No</th>
+            <th>Status</th>
+            <th>Action</th>
+        </tr>
+    </thead>
+    <tbody></tbody>
+</table>
+
+<div id="ticketModal" class="modal">
+    <h3>Ticket Details</h3>
+    <p id="details"></p>
+    <div id="screenshots"></div>
+    <button onclick="closeModal()">Close</button>
+</div>
+
+<script>
+/* =========================
+   TOKEN FROM sessionStorage
+   ========================= */
+function getRoleFromToken(token) {
+    const payload = JSON.parse(atob(token.split(".")[1]));
+    return payload.role;
+}
+
+const token = sessionStorage.getItem("access_token");
+
+if (!token || getRoleFromToken(token) !== "user") {
+    alert("Unauthorized");
+    window.location.href = "user_login.html";
+    throw new Error("Blocked");
+}
+
+
+/* =========================
+   FETCH USER TICKETS
+   ========================= */
+fetch("http://127.0.0.1:8000/user/my-tickets", {
+    headers: {
+        "Authorization": "Bearer " + token
+    }
+})
+.then(res => {
+    if (!res.ok) {
+        throw new Error("Unauthorized or server error: " + res.status);
+    }
+    return res.json();
+})
+.then(data => {
+    if (!Array.isArray(data)) {
+        console.error("Unexpected response:", data);
+        return;
+    }
+
+    const tbody = document.querySelector("#ticketTable tbody");
+    tbody.innerHTML = "";
+
+    data.forEach(ticket => {
+        tbody.innerHTML += `
+            <tr>
+                <td>${ticket.ticket_no}</td>
+                <td>${ticket.status}</td>
+                <td>
+                    <button onclick='viewTicket(${JSON.stringify(ticket)})'>
+                        View Report
+                    </button>
+                </td>
+            </tr>
+        `;
+    });
+})
+.catch(err => {
+    console.error(err);
+    alert("Unable to load tickets. Please login again.");
+});
+
+/* =========================
+   VIEW TICKET DETAILS
+   ========================= */
+function viewTicket(ticket) {
+
+    document.getElementById("details").innerHTML = `
+        <b>Ticket No:</b> ${ticket.ticket_no}<br>
+        <b>Subject:</b> ${ticket.subject || "-"}<br>
+        <b>Category:</b> ${ticket.category || "-"}<br>
+        <b>Status:</b> ${ticket.status}<br>
+        <b>Created At:</b> ${ticket.created_at}
+    `;
+
+    const container = document.getElementById("screenshots");
+    container.innerHTML = "";
+
+    if (ticket.attachments && ticket.attachments.length > 0) {
+        ticket.attachments.forEach(att => {
+            const img = document.createElement("img");
+            img.src = "http://127.0.0.1:8000/" + att.file_path;
+            container.appendChild(img);
+        });
+    } else {
+        container.innerHTML = "<i>No screenshots uploaded</i>";
+    }
+
+    document.getElementById("ticketModal").style.display = "block";
+}
+
+function closeModal() {
+    document.getElementById("ticketModal").style.display = "none";
+}
+</script>
+
+</body>
+</html>
