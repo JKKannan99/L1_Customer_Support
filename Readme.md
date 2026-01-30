@@ -33,16 +33,18 @@ A web-based customer support system where users can raise tickets with screensho
 
 ## API's
 
-* user registeration - ``
-* user login - ``
-* agent registration - ``
-* agent login - ``
+* user registeration - `http://127.0.0.1:8000/user/register`
+* user login - `http://127.0.0.1:8000/user/login`
+* agent registration - `http://127.0.0.1:8000/agent/register`
+* agent login - `http://127.0.0.1:8000/agent/login`
 
 
 ## How It Works
 
-1. Customer logs in and creates a support ticket with screenshots and pdf's
-2. System generates a unique ticket ID and chat channel
+1. Customer register then login.
+2. server create refresh and access tokens while login
+3. after login user can get for privilages
+4. like as agent can register and login also
 
 
 ## Setup Instructions

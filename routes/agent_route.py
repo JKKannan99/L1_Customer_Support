@@ -31,7 +31,6 @@ def read_all(
     return agser.get_all_tickets(db, current_user)
 
 
-
 # --- AGENT LOGOUT ---
 @router.post("/logout")
 def agent_logout(
